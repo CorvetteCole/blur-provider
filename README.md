@@ -17,6 +17,8 @@ add below keypair to property _MUTTER_HINTS
 keypair template: blur-provider=${sigma-value} apply blur with given sigma value
 (note, ${sigma-value} is a value between 0 and 111)
 
+You can test this with xprop: "xprop -f _MUTTER_HINTS 8s -set _MUTTER_HINTS blur-provider=${sigma-value}"
+
 info about _MUTTER_HINTS property:
 The purpose of the hints is to allow fine-tuning of the Window Manager and
 Compositor behaviour on per-window basis, and is intended primarily for
