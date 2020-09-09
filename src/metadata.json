@@ -1,0 +1,11 @@
+{
+	"extension-id": "blur-provider",
+	"uuid": "blur-provider@corvettecole.github.com", 
+	"name": "blur-provider", 
+ 	"gettext-domain": "gnome-shell-extensions",
+	"settings-schema": "org.gnome.shell.extensions.blur-provider",
+	"description": "Provides an easy way for applications to request blur, and allows users to set blur on applications", 
+	"url": "https://github.com/corvettecole/blur-provider", 
+	"version": 1,
+	"shell-version": ["3.36", "3.38"]
+}
