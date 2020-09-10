@@ -19,7 +19,7 @@ let _on_window_created, _on_focus_changed;
 function update_blur(mutter_hint, pid) {
     if (mutter_hint != null && mutter_hint.includes("blur-provider")) {
         let sigma = parse_sigma_value(mutter_hint);
-        if (sigma == null || (sigma < 0 && sigma > 111)) {
+        if (sigma < 0 && sigma > 111) {
             log("sigma value is null or outside of range (0-111), defaulting to extension setting")
             sigma = _settings.get_int('blur-intensity');
         }
@@ -101,7 +101,12 @@ function remove_blur(pid) {
 function parse_sigma_value(property) {
     let result = property.match("(blur-provider=)(\\d{1,3})")
     log(result);
-    return result[2];
+    if (result == null) { // return -1 if result is null
+        return -1;
+    } else {
+        return result[2];
+    }
+
 }
 
 function focus_changed(meta_display, gpointer) {
