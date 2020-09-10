@@ -19,15 +19,25 @@ let _on_window_created, _on_focus_changed;
 function update_blur(mutter_hint, pid) {
     if (mutter_hint != null && mutter_hint.includes("blur-provider")) {
         let sigma = parse_sigma_value(mutter_hint);
+        if (sigma == null || (sigma < 0 && sigma > 111)) {
+            log("sigma value is null or outside of range (0-111), defaulting to extension setting")
+            sigma = _settings.get_int('blur-intensity');
+        }
         if (_blurActorMap.has(pid)) {
-            // modify blur effect, but keep actor
-            let blurActor = _blurActorMap.get(pid);
-            let blurEffect = new Shell.BlurEffect({sigma: sigma, mode: Shell.BlurMode.BACKGROUND});
-            blurActor.remove_effect_by_name('blur-effect');
-            blurActor.add_effect_with_name('blur-effect', blurEffect);
-        } else {
+            if (sigma === 0) {
+                remove_blur(pid);
+            } else {
+                // modify blur effect, but keep actor
+                let blurActor = _blurActorMap.get(pid);
+                let blurEffect = new Shell.BlurEffect({sigma: sigma, mode: Shell.BlurMode.BACKGROUND});
+                blurActor.remove_effect_by_name('blur-effect');
+                blurActor.add_effect_with_name('blur-effect', blurEffect);
+            }
+        } else if (sigma !== 0) { // don't set blur if it is 0
             set_blur(pid, sigma);
         }
+    } else if (_blurActorMap.has(pid)) {
+        remove_blur(pid); // remove blur if the mutter_hint no longer contains our blur-provider value
     }
 }
 
@@ -166,8 +176,6 @@ function cleanup_actor(pid) {
     _actorMap.delete(pid);
     _windowMap.delete(pid);
 }
-
-
 
 
 function enable() {
