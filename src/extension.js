@@ -22,8 +22,8 @@ function update_blur(mutter_hint, pid) {
         if (_blurActorMap.has(pid)) {
             // modify blur effect, but keep actor
             let blurActor = _blurActorMap.get(pid);
-            let blurEffect = new Shell.BlurEffect({sigma: sigma_value, mode: Shell.BlurMode.BACKGROUND});
-            blurActor.remove_effect_with_name('blur-effect');
+            let blurEffect = new Shell.BlurEffect({sigma: sigma, mode: Shell.BlurMode.BACKGROUND});
+            blurActor.remove_effect_by_name('blur-effect');
             blurActor.add_effect_with_name('blur-effect', blurEffect);
         } else {
             set_blur(pid, sigma);
@@ -76,6 +76,8 @@ function set_blur(pid, sigma_value) {
 
         blurActor.add_effect_with_name('blur-effect', blurEffect);
 
+        blurActor['blur_provider_pid'] = pid;
+
         global.window_group.insert_child_below(blurActor, window_actor);
         _blurActorMap.set(pid, blurActor);
     }
@@ -111,6 +113,8 @@ function window_created(meta_display, meta_window, gpointer) {
 
     let pid = meta_window.get_pid();
     if (!_actorMap.has(pid)) {
+        window_actor['blur_provider_pid'] = pid;
+        meta_window['blur_provider_pid'] = pid;
         _actorMap.set(pid, window_actor);
         _windowMap.set(pid, meta_window);
         _on_actor_destroyedMap.set(pid, window_actor.connect('destroy', actor_destroyed));
@@ -133,16 +137,7 @@ function mutter_hint_changed(meta_window) {
 function actor_destroyed(window_actor) {
     log("actor_destroyed, disconnecting listeners");
     //log(window_actor.meta_window.get_title());
-    let pid;
-    if (window_actor.get_meta_window() == null) {
-        _actorMap.forEach((actor, key) => {
-            if (actor === window_actor){
-                pid = key;
-            }
-        });
-    } else {
-        pid = window_actor.get_meta_window().get_pid()
-    }
+    let pid = window_actor.blur_provider_pid;
 
     log(pid);
 
