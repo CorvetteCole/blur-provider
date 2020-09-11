@@ -7,7 +7,9 @@ While Gnome supports blur since 3.36, it isn't as easy as applying that blur to 
 - ~blur sticks around when windows are minimized, need to listen for that~ **FIXED**
 - ~blur sticks around when switching workspaces, might be able to be fixed in the same way as the above issue~ **FIXED**
 - ~when actors are removed there is a delay in removing the blur actor due to the way I am iterating with a loop~ **FIXED**
-- blur actor is not put behind the target actor properly on focus changes
+- ~blur actor is not put behind the target actor properly on focus changes~ **FIXED**
+- 30ms "blink" of blur actor when focus changes (needed to keep from obscuring content, but weird workaround)
+- blur actor still appears on top after picking a window from overview
 - a listener needs to be set to update all bluractors using default extension values when they are changed. we probably need to hold a set of pids that refer to bluractors using default values to do this.
 - code needs to be broken up, object orientated. refactoring comes when this thing is working right
 
