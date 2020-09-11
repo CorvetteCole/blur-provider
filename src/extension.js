@@ -15,7 +15,8 @@ let _on_actor_destroyedMap = new Map();
 let _on_actor_visibleMap = new Map();
 
 
-let _on_window_created, _on_focus_changed;
+let _on_window_created, _on_focus_changed, _on_workspace_changed;
+
 
 function update_blur(mutter_hint, pid) {
     if (mutter_hint != null && mutter_hint.includes("blur-provider")) {
@@ -77,7 +78,13 @@ function set_blur(pid, sigma_value) {
         offset: -offsetHeight
     });
 
+
     let blurActor = new Clutter.Actor();
+    // blurActor.paint = function() {
+    //     global.window_group.set_child_below_sibling(_blurActorMap.get(pid), _actorMap.get(pid));
+    //     log("vfunc_paint");
+    //     this.paint();
+    // }
     blurActor.add_constraint(constraintPosX);
     blurActor.add_constraint(constraintPosY);
     blurActor.add_constraint(constraintSizeX);
@@ -86,6 +93,7 @@ function set_blur(pid, sigma_value) {
     blurActor.add_effect_with_name('blur-effect', blurEffect);
 
     blurActor['blur_provider_pid'] = pid;
+
 
     global.window_group.insert_child_below(blurActor, window_actor);
     _blurActorMap.set(pid, blurActor);
@@ -96,12 +104,12 @@ function set_blur(pid, sigma_value) {
 
 }
 
+
+
 function remove_blur(pid) {
     global.window_group.remove_actor(_blurActorMap.get(pid));
     _blurActorMap.delete(pid);
     _actorMap.get(pid).disconnect(_on_actor_visibleMap.get(pid));
-    _windowMap.get(pid).disconnect(_on_window_focus_changedMap.get(pid));
-    _on_window_focus_changedMap.delete(pid);
     _on_actor_visibleMap.delete(pid);
 }
 
@@ -116,27 +124,40 @@ function parse_sigma_value(property) {
 
 }
 
-function focus_changed(meta_display, gpointer) {
-    log("focus_changed");
-    if (_blurActorMap.size > 0) {
-        //log("wait over");
-        _blurActorMap.forEach((blurActor, pid) => {
-            blurActor.hide();
-            Promise.timeout().then(result => {
-                global.window_group.set_child_below_sibling(blurActor, _actorMap.get(pid));
-                _blurActorMap.get(pid).queue_redraw();
-                _actorMap.get(pid).queue_redraw();
-                blurActor.show();
-            });
-        });
+function fix_blur() {
+    _blurActorMap.forEach((blurActor, pid) => {
+        //log("fix_blur")
+        let actor = _actorMap.get(pid);
+        //if (actor.is_visible()) {
+        if (actor.get_parent() === blurActor.get_parent()){
+            global.window_group.set_child_below_sibling(blurActor, actor);
+        }
 
-        //log("begin wait");
-    }
+
+        // log("pid: " + pid);
+        // log("actor: " + actor + " blurActor: " + blurActor);
+        // log("actor parent: " + actor.get_parent() + " blurActor: " + blurActor.get_parent());
+        // log("actor visible: " + actor.is_visible() + " blurActor: " + blurActor.is_visible());
+
+    });
 }
 
-Promise.timeout = function (priority = GLib.PRIORITY_DEFAULT, interval = 30) {
+function workspace_changed() {
+    //log("workspace_changed");
+    // TODO somehow fix weird bug when returning from a workspace
+}
+
+Promise.timeout = function (priority = GLib.PRIORITY_DEFAULT, interval = 1000) {
     return new Promise(resolve => GLib.timeout_add(priority, interval, resolve));
 };
+
+function focus_changed() {
+    log("focus_changed");
+    if (_blurActorMap.size > 0) {
+        let callbackId = Meta.later_add(Meta.LaterType.BEFORE_REDRAW, fix_blur);
+        log("callback id: " + callbackId);
+    }
+}
 
 function window_created(meta_display, meta_window, gpointer) {
     log("window_created");
@@ -216,12 +237,15 @@ function enable() {
     _settings = ExtensionUtils.getSettings();
     _on_focus_changed = global.display.connect('notify::focus-window', focus_changed);
     _on_window_created = global.display.connect('window-created', window_created);
+    _on_workspace_changed = global.workspace_manager.connect('workspace-switched', workspace_changed)
     log("blur provider enabled");
 }
 
 function disable() {
     global.display.disconnect(_on_focus_changed);
     global.display.disconnect(_on_window_created);
+    global.workspace_manager.disconnect(_on_workspace_changed);
+
     _actorMap.forEach(((value, key) => {
         cleanup_actor(key);
     }));
