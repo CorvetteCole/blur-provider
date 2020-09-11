@@ -4,9 +4,10 @@ A Gnome extension that allows you to manually apply blur to applications, and pr
 While Gnome supports blur since 3.36, it isn't as easy as applying that blur to any old window. The problem is, the blur also applies to the shadow around windows and looks terrible. This extension works by adding an extra actor that excludes the shadows and tracking that actor behind a target window. Then blur is applied to that, working around the issue of blur being applied to shadows. This is not an easy implementation for applications to just include, so this extension exists as a convenient way for applications to simply request blur with a property.
 
 # TODO
-- blur sticks around when windows are minimized, need to listen for that
-- blur sticks around when switching workspaces, might be able to be fixed in the same way as the above issue
+- ~blur sticks around when windows are minimized, need to listen for that~ **FIXED**
+- ~blur sticks around when switching workspaces, might be able to be fixed in the same way as the above issue~ **FIXED**
 - ~when actors are removed there is a delay in removing the blur actor due to the way I am iterating with a loop~ **FIXED**
+- blur actor is not put behind the target actor properly on focus changes
 - a listener needs to be set to update all bluractors using default extension values when they are changed. we probably need to hold a set of pids that refer to bluractors using default values to do this.
 - code needs to be broken up, object orientated. refactoring comes when this thing is working right
 
