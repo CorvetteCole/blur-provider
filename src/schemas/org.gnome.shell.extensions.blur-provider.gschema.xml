@@ -1,36 +1,13 @@
 <schemalist gettext-domain="gnome-shell-extensions">
   <schema id="org.gnome.shell.extensions.blur-provider" path="/org/gnome/shell/extensions/blur-provider/">
-    <key name="window-opacity" type="i">
-      <default>128</default>
-      <summary>Opacity</summary>
-      <description>This will decide how transparent dragged window.</description>
-    </key>
+
 
     <key name="blur-intensity" type="i">
-      <default>20</default>
+      <default>100</default>
       <summary>Blur Intensity</summary>
-      <description>This will decide the intensity of the blur effect.</description>
+      <description>This will decide the intensity of the blur effect. Higher values are more performant</description>
     </key>
    
-    <key name="transition-time" type="d">
-      <default>0.1</default>
-      <summary>Transition Time</summary>
-      <description>Animation time.</description>
-    </key>
-    <key name="blur" type="b">
-      <default>true</default>
-      <summary>Enable blur</summary>
-      <description>Enable blur.</description>
-    </key>
-    <key name="transparent-on-moving" type="b">
-      <default>true</default>
-      <summary>Transparent on moving</summary>
-      <description>Transparent on moving.</description>
-    </key>
-    <key name="transparent-on-resizing" type="b">
-      <default>true</default>
-      <summary>Transparent on resizing</summary>
-      <description>Transparent on resizing.</description>
-    </key>
+
   </schema>
 </schemalist>
