@@ -35,3 +35,8 @@ The property is a list of colon-separated key=value pairs. The key names for
 any plugin-specific hints must be suitably namespaced to allow for shared
 use; 'mutter-' key prefix is reserved for internal use, and must not be used
 by plugins.
+
+# Behavior (simply by modifiying the \_MUTTER_HINTS property you can adjust blur instantly)
+- If your \_MUTTER_HINTS is null, or no longer includes blur-provider, blur is removed
+- If you do not pass a sigma value at all, or the sigma value is outside the range 0-111 (inclusive), the blur sigma will default to the extension settings sigma value set by the user
+- If you pass a sigma value of 0, blur will be removed
