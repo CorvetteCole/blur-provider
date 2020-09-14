@@ -10,7 +10,10 @@ let _settings = null;
 let _blurActorMap = new Map();
 let _actorMap = new Map();
 let _windowMap = new Map();
+
 let _on_mutter_hint_changedMap = new Map();
+let _on_window_unmanagedMap = new Map();
+
 let _on_actor_destroyedMap = new Map();
 let _on_actor_visibleMap = new Map();
 
@@ -115,7 +118,7 @@ function remove_blur(pid) {
 
 function parse_sigma_value(property) {
     let result = property.match("(blur-provider=)(\\d{1,3})")
-    log(result);
+    //log(result);
     if (result == null) { // return -1 if result is null
         return -1;
     } else {
@@ -152,24 +155,25 @@ Promise.timeout = function (priority = GLib.PRIORITY_DEFAULT, interval = 1000) {
 };
 
 function focus_changed() {
-    log("focus_changed");
+    //log("focus_changed");
     if (_blurActorMap.size > 0) {
         let callbackId = Meta.later_add(Meta.LaterType.BEFORE_REDRAW, fix_blur);
-        log("callback id: " + callbackId);
+        //log("callback id: " + callbackId);
     }
 }
 
 function window_created(meta_display, meta_window, gpointer) {
-    log("window_created");
+    //log("window_created");
     //log(meta_display);
     let window_actor = meta_window.get_compositor_private();
-    log(window_actor);
+    //log(window_actor);
     if (!meta_window) {
-        log("no meta window");
+        //log("no meta window");
         return;
     }
 
-    let pid = meta_window.get_pid();
+    let pid = new Date().valueOf();
+    //meta_window.get_pid();
     if (!_actorMap.has(pid)) {
         window_actor['blur_provider_pid'] = pid;
         meta_window['blur_provider_pid'] = pid;
@@ -177,59 +181,66 @@ function window_created(meta_display, meta_window, gpointer) {
         _windowMap.set(pid, meta_window);
         _on_actor_destroyedMap.set(pid, window_actor.connect('destroy', actor_destroyed));
         _on_mutter_hint_changedMap.set(pid, meta_window.connect('notify::mutter-hints', mutter_hint_changed));
+        _on_window_unmanagedMap.set(pid, meta_window.connect('unmanaged', window_unmanaged));
     }
 
     update_blur(meta_window.get_mutter_hints(), pid);
 }
 
 function mutter_hint_changed(meta_window) {
-    log("mutter_hint_changed");
-    log(meta_window.get_mutter_hints());
+    //log("mutter_hint_changed");
+    //log(meta_window.get_mutter_hints());
     // meta_window.get_compositor_private() get actor
 
-    update_blur(meta_window.get_mutter_hints(), meta_window.get_pid());
-
-
+    update_blur(meta_window.get_mutter_hints(), meta_window.blur_provider_pid);
 }
 
 function actor_visibility_changed(window_actor) {
-    log("visibility change");
+    //log("visibility change");
     let pid = window_actor.blur_provider_pid;
     if (window_actor.visible) {
-        log("actor visible");
+        //log("actor visible");
         _blurActorMap.get(pid).show();
     } else {
-        log("actor not visible");
+        //log("actor not visible");
         _blurActorMap.get(pid).hide();
     }
 }
 
+function window_unmanaged(meta_window){
+    //log("window_unmanaged");
+    let pid = meta_window.blur_provider_pid;
+    cleanup_window(pid);
+}
+
 function actor_destroyed(window_actor) {
-    log("actor_destroyed");
-    //log(window_actor.meta_window.get_title());
+    //log("actor_destroyed");
     let pid = window_actor.blur_provider_pid;
     cleanup_actor(pid)
 }
 
+function cleanup_window(pid) {
+    //log("cleanup_window");
+    _windowMap.get(pid).disconnect(_on_mutter_hint_changedMap.get(pid));
+    _windowMap.get(pid).disconnect(_on_window_unmanagedMap.get(pid));
+    _on_mutter_hint_changedMap.delete(pid);
+    _windowMap.delete(pid);
+}
+
 function cleanup_actor(pid) {
-    log("cleanup_actor, disconnecting listeners");
+    //log("cleanup_actor, disconnecting listeners");
 
     if (_blurActorMap.has(pid)) {
         remove_blur(pid);
     }
-
     _actorMap.get(pid).disconnect(_on_actor_destroyedMap.get(pid));
-    _windowMap.get(pid).disconnect(_on_mutter_hint_changedMap.get(pid));
     if (_on_actor_visibleMap.has(pid)) {
         _actorMap.get(pid).disconnect(_on_actor_visibleMap.get(pid));
         _on_actor_visibleMap.delete(pid);
     }
 
-
     _on_actor_destroyedMap.delete(pid);
-    _on_mutter_hint_changedMap.delete(pid);
     _actorMap.delete(pid);
-    _windowMap.delete(pid);
 }
 
 
@@ -249,8 +260,12 @@ function disable() {
     _actorMap.forEach(((value, key) => {
         cleanup_actor(key);
     }));
+
+    _windowMap.forEach(((value, key) => {
+        cleanup_window(key);
+    }));
     _settings.run_dispose();
-    log("map sizes, _actorMap: " + _actorMap.size + " _blurActorMap: " + _blurActorMap.size + " _windowMap: " + _windowMap.size + "_on_mutter_hint_changedMap: " + _on_mutter_hint_changedMap.size + " _on_actor_destroyedMap: " + _on_actor_destroyedMap.size + " _on_actor_visibleMap: " + _on_actor_visibleMap.size);
+    log("map sizes, _actorMap: " + _actorMap.size + " _blurActorMap: " + _blurActorMap.size + " _windowMap: " + _windowMap.size + "_on_mutter_hint_changedMap: " + _on_mutter_hint_changedMap.size + "_on_window_unmanagedMap: " + _on_window_unmanagedMap.size + " _on_actor_destroyedMap: " + _on_actor_destroyedMap.size + " _on_actor_visibleMap: " + _on_actor_visibleMap.size);
     log("blur provider disabled");
 }
 
