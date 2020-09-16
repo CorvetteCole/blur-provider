@@ -41,10 +41,11 @@ by plugins.
 # TODO
 - after switching to a workspace and back, blur appears on top of the target actor until something is interacted with
 - blur is not present behind actor in overview
-- a listener needs to be set to update all bluractors using default extension values when they are changed. we probably need to hold a set of pids that refer to bluractors using default values to do this.
 - when switching focus rapidly between windows, blur can blink in front of all windows briefly
 
-- ~code needs to be broken up, object orientated. refactoring comes when this thing is working right~
+
+- ~a listener needs to be set to update all bluractors using default extension values when they are changed. we probably need to hold a set of pids that refer to bluractors using default values to do this.~ **FIXED**
+- ~code needs to be broken up, object orientated. refactoring comes when this thing is working right~ **FIXED**
 - ~blur sticks around when windows are minimized, need to listen for that~ **FIXED**
 - ~blur sticks around when switching workspaces, might be able to be fixed in the same way as the above issue~ **FIXED**
 - ~when actors are removed there is a delay in removing the blur actor due to the way I am iterating with a loop~ **FIXED**

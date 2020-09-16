@@ -10,15 +10,19 @@ function update_blur(window, pid) {
     let mutter_hint = window.get_mutter_hints();
     if (mutter_hint != null && mutter_hint.includes("blur-provider")) {
         let sigma = _parse_sigma_value(mutter_hint);
-        if (sigma < 0 && sigma > 111) {
-            log("sigma value is null or outside of range (0-111), defaulting to extension setting")
+        if (sigma == null || (sigma < 0 && sigma > 111)) {
+            //log("sigma value is null or outside of range (0-111), defaulting to extension setting")
             sigma = Tracking.settings.get_int('blur-intensity');
+            Tracking.set_uses_default_blur(pid);
+        } else {
+            Tracking.remove_uses_default_blur(pid);
         }
+
         if (Tracking.has_blur_actor(pid)) {
             if (sigma === 0) {
                 remove_blur(pid);
             } else {
-                _update_blur(Tracking.get_blur_actor(pid));
+                _update_blur(Tracking.get_blur_actor(pid), sigma);
             }
         } else if (sigma !== 0) { // don't set blur if it is 0
             _set_blur(pid, Tracking.get_actor(pid), Tracking.get_window(pid), sigma)
@@ -39,7 +43,7 @@ function remove_blur(pid){
     Tracking.remove_blur_tracking(pid);
 }
 
-function _update_blur(blur_actor){
+function _update_blur(blur_actor, sigma){
     let blurEffect = new Shell.BlurEffect({sigma: sigma, mode: Shell.BlurMode.BACKGROUND});
     blur_actor.remove_effect_by_name('blur-effect');
     blur_actor.add_effect_with_name('blur-effect', blurEffect);
@@ -107,7 +111,7 @@ function _parse_sigma_value(property) {
     let result = property.match("(blur-provider=)(\\d{1,3})")
     //log(result);
     if (result == null) { // return -1 if result is null
-        return -1;
+        return null;
     } else {
         return result[2];
     }

@@ -18,6 +18,8 @@ let _on_window_unmanagedMap = new Map();
 let _on_actor_destroyedMap = new Map();
 let _on_actor_visibleMap = new Map();
 
+let _uses_default_blur = new Set();
+
 function get_window(pid) {
     return _windowMap.get(pid);
 }
@@ -44,6 +46,16 @@ function has_actor(pid) {
 
 function has_blur_actor(pid) {
     return _blurActorMap.has(pid);
+}
+
+function set_uses_default_blur(pid) {
+    _uses_default_blur.add(pid);
+}
+
+function remove_uses_default_blur(pid) {
+    if (_uses_default_blur.has(pid)) {
+        _uses_default_blur.delete(pid);
+    }
 }
 
 function track_new(actor, window) {
@@ -99,6 +111,14 @@ function focus_changed() {
     }
 }
 
+function blur_setting_changed() {
+    _uses_default_blur.forEach((value => {
+        if (_blurActorMap.has(value)){
+            Blur.update_blur(_windowMap.get(value), value);
+        }
+    }));
+}
+
 function _cleanup_window(pid) {
     //log("cleanup_window");
     _windowMap.get(pid).disconnect(_on_mutter_hint_changedMap.get(pid));
@@ -145,6 +165,7 @@ function _fix_blur() {
 }
 
 function _mutter_hint_changed(meta_window) {
+    log("mutter_hint_changed")
     Blur.update_blur(meta_window, meta_window.blur_provider_pid);
 }
 

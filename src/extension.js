@@ -8,7 +8,7 @@ const Extension = ExtensionUtils.getCurrentExtension();
 const Blur = Extension.imports.blur;
 const Tracking = Extension.imports.tracking;
 
-let _on_window_created, _on_focus_changed, _on_workspace_changed;
+let _on_window_created, _on_focus_changed, _on_workspace_changed, _on_blur_setting_changed;
 
 function workspace_changed() {
     //log("workspace_changed");
@@ -34,6 +34,7 @@ function enable() {
     _on_focus_changed = global.display.connect('notify::focus-window', Tracking.focus_changed);
     _on_window_created = global.display.connect('window-created', window_created);
     _on_workspace_changed = global.workspace_manager.connect('workspace-switched', workspace_changed)
+    _on_blur_setting_changed = Tracking.settings.connect('changed::blur-intensity', Tracking.blur_setting_changed);
     log("blur provider enabled");
 }
 
@@ -41,6 +42,7 @@ function disable() {
     global.display.disconnect(_on_focus_changed);
     global.display.disconnect(_on_window_created);
     global.workspace_manager.disconnect(_on_workspace_changed);
+    Tracking.settings.disconnect(_on_blur_setting_changed);
 
     Tracking.cleanup_actors();
     Tracking.cleanup_windows();
