@@ -51,7 +51,7 @@ by plugins.
 - after switching to a workspace and back, blur appears on top of the target actor until something is interacted with
 - blur is not present behind actor in overview
 - when switching focus rapidly between windows, blur can blink in front of all windows briefly
-
+- rewrite prefs.js file, don't use the gnome-shell-extensions gettext domain, use the extension UUID
 
 - ~a listener needs to be set to update all bluractors using default extension values when they are changed. we probably need to hold a set of pids that refer to bluractors using default values to do this.~ **FIXED**
 - ~code needs to be broken up, object orientated. refactoring comes when this thing is working right~ **FIXED**
