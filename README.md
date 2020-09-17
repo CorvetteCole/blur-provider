@@ -5,7 +5,7 @@ While Gnome supports blur since 3.36, it isn't as easy as applying that blur to 
 
 # Installation
 ## Install from extensions.gnome.org 
-(coming soon)
+[<img src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true" alt="Get it on GNOME Extensions" height="100" align="middle">][ego]
 ## Install from GitHub
 - Clone this repository
 - Change your directory to the root of this repository
@@ -52,3 +52,5 @@ by plugins.
 - ~blur actor is not put behind the target actor properly on focus changes~ **FIXED**
 - ~30ms "blink" of blur actor when focus changes (needed to keep from obscuring content, but weird workaround)~ **FIXED**
 - ~blur actor still appears on top after picking a window from overview~ **FIXED**
+
+[ego]: https://extensions.gnome.org/extension/$NUMBER/gsconnect/
