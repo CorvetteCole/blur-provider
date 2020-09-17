@@ -3,6 +3,15 @@ A Gnome extension that allows you to manually apply blur to applications, and pr
 
 While Gnome supports blur since 3.36, it isn't as easy as applying that blur to any old window. The problem is, the blur also applies to the shadow around windows and looks terrible. This extension works by adding an extra actor that excludes the shadows and tracking that actor behind a target window. Then blur is applied to that, working around the issue of blur being applied to shadows. This is not an easy implementation for applications to just include, so this extension exists as a convenient way for applications to simply request blur with a property.
 
+# Try it out
+## Method 1
+1. run xprop -f _MUTTER_HINTS 8s -set _MUTTER_HINTS blur-provider=${sigma-value}
+2. click on the window you want blur applied to
+## Method 2
+1. clone https://github.com/AryToNeX/Glasstron
+2. cd in to Glasstron/test
+3. run ```npm install && npm test``` 
+
 # Installation
 ## Install from extensions.gnome.org 
 [<img src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true" alt="Get it on GNOME Extensions" height="100" align="middle">][ego]
