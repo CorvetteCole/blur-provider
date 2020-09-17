@@ -15,10 +15,6 @@ function workspace_changed() {
     // TODO somehow fix weird bug when returning from a workspace
 }
 
-Promise.timeout = function (priority = GLib.PRIORITY_DEFAULT, interval = 1000) {
-    return new Promise(resolve => GLib.timeout_add(priority, interval, resolve));
-};
-
 function window_created(meta_display, meta_window) {
     //log("window_created");
     let window_actor = meta_window.get_compositor_private();
