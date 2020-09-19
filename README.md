@@ -29,7 +29,8 @@ While Gnome supports blur since 3.36, it isn't as easy as applying that blur to 
 - https://github.com/AryToNeX/Glasscord (available in the upcoming 1.0 release)
 
 # Support development
-paypal.me/CGerdemann
+https://paypal.me/CGerdemann
+
 Will add crypto links if requested. I am quite broke right now, and money is a good motivator to keep me working on my projects while I study :)
 
 # Integrate blur in to your application
