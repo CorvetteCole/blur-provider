@@ -24,7 +24,7 @@ While Gnome supports blur since 3.36, it isn't as easy as applying that blur to 
 2. cd in to Glasstron/test
 3. run ```npm install && npm test``` 
 
-# Applications with blur-provider support built-in
+## Applications with blur-provider support built-in
 - https://github.com/AryToNeX/Glasstron
 - https://github.com/AryToNeX/Glasscord (available in the upcoming 1.0 release)
 
