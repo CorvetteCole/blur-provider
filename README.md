@@ -62,4 +62,4 @@ by plugins.
 - ~30ms "blink" of blur actor when focus changes (needed to keep from obscuring content, but weird workaround)~ **FIXED**
 - ~blur actor still appears on top after picking a window from overview~ **FIXED**
 
-[ego]: https://extensions.gnome.org/extension/$NUMBER/gsconnect/
+[ego]: https://extensions.gnome.org/extension/3607/blur-provider/
