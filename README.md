@@ -1,3 +1,7 @@
+## This extension is no longer being maintained. 
+I am working on merging all existing functionality along with planned features such as manual application blurring in to [blur-my-shell](https://github.com/aunetx/blur-my-shell). You can track the progress of this initial merge here: https://github.com/aunetx/blur-my-shell/pull/35
+
+
 # blur-provider
 A Gnome extension that allows you to manually apply blur to applications, and provides an easy way for applications to request blur themselves
 
